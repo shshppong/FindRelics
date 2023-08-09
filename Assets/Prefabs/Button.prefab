@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 3751835950625698698}
   - component: {fileID: 3751835950625698699}
   - component: {fileID: 3751835950625698701}
+  - component: {fileID: 6450419282918349447}
   m_Layer: 9
   m_Name: Button
   m_TagString: Untagged
@@ -78,6 +79,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e9323510063b8b45bb3c110c976fc42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 6450419282918349447}
+  duration: 0.5
 --- !u!65 &3751835950625698701
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -89,8 +92,29 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.5, z: 1}
+  m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0.25, z: 0}
+--- !u!95 &6450419282918349447
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3751835950625698696}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 53bd6c2931476b54cb254e7f04bef02e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3751835950729348208
 GameObject:
   m_ObjectHideFlags: 0

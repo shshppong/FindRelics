@@ -17,14 +17,14 @@ public class Tile : MonoBehaviour
     // SpriteRenderer
     private List<Transform> connectBoxes;
 
-    private const int minRotation = 0;
-    private const int maxRotation = 3;
+    private const int minRotation = 4;
+    private const int maxRotation = 7;
     private const int rotationMultiplier = 90;
 
     public void Initialize(int tile)
     {
-        // 타일 데이터 기입된 숫자가 십의 자리가 넘어가도 0~3으로 고정되게
-        TileType = tile % levelData.Column;
+        // 타일 데이터 기입된 숫자가 십의 자리가 넘어가도 4~8으로 고정되게
+        TileType = tile % (maxRotation + 1);
         // 생성된 타일 프리팹의 트랜스 정보를 가져옴
         currentTile = Instantiate(_tilePrefabs[TileType], transform);
         // 생성된 타일에 트랜스 정보의 위치를 0, 0, 0으로 함

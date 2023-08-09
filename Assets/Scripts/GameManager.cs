@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
                 Vector3 spawnPos = new Vector3(xPos, 0, zPos);
                 Tile tempTile = Instantiate(_tilePrefab);
                 tempTile.transform.position = spawnPos;
-                tempTile.Initialize(_level.Data[z * _level.Column + x]);
+                tempTile.Initialize((int)_level.Data[z * _level.Column + x]);
                 tiles[z, x] = tempTile;
                 if (tempTile.TileType == 1)
                 {

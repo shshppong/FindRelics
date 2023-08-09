@@ -1,36 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public class TileButton : MonoBehaviour
 {
+    [Header("Animator Settings")]
+    [SerializeField] Animator anim;
+    
+
+
+    void Start()
+    {
+        anim.GetComponent<Animator>();
+    }
 
     // 마우스 가까이 가져다 대었을 때
-    private void OnMouseEnter()
+    void OnMouseEnter()
     {
-        Ray ray;
-        RaycastHit hit;
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-        {
-            // TODO
-            Debug.Log($"[Obj:{hit.transform.name}] On Mouse Enter");
-        }
+        anim.SetBool("isEntered", true);
     }
 
-    private void OnMouseExit()
+    void OnMouseExit()
     {
-        Ray ray;
-        RaycastHit hit;
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-        {
-            // TODO
-            Debug.Log($"[Obj:{hit.transform.name}] On Mouse Exit");
-        }
+        anim.SetBool("isEntered", false);
     }
 
-    private void OnMouseDown()
+    void OnMouseDown()
     {
         Ray ray;
         RaycastHit hit;
@@ -38,19 +34,7 @@ public class TileButton : MonoBehaviour
         if (Physics.Raycast(ray, out hit))
         {
             // TODO
-            Debug.Log($"[Obj:{hit.transform.name}] On Mouse Down");
-        }
-    }
-
-    private void OnMouseUp()
-    {
-        Ray ray;
-        RaycastHit hit;
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-        {
-            // TODO
-            Debug.Log($"[Obj:{hit.transform.name}] On Mouse Up");
+            anim.SetTrigger("Clicked");
         }
     }
 }
