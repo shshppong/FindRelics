@@ -7,15 +7,16 @@ public class TileButton : MonoBehaviour
 {
     [Header("Animator Settings")]
     [SerializeField] Animator anim;
-    
 
+    [Header("Level Data")]
+    [SerializeField] LevelData levelData;
 
     void Start()
     {
         anim.GetComponent<Animator>();
     }
 
-    // ¸¶¿ì½º °¡±îÀÌ °¡Á®´Ù ´ë¾úÀ» ¶§
+    // ë§ˆìš°ìŠ¤ ê°€ê¹Œì´ ê°€ì ¸ë‹¤ ëŒ€ì—ˆì„ ë•Œ
     void OnMouseEnter()
     {
         anim.SetBool("isEntered", true);
@@ -28,13 +29,6 @@ public class TileButton : MonoBehaviour
 
     void OnMouseDown()
     {
-        Ray ray;
-        RaycastHit hit;
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit))
-        {
-            // TODO
-            anim.SetTrigger("Clicked");
-        }
+        anim.SetTrigger("Clicked");
     }
 }

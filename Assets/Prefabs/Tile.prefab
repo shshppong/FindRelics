@@ -1,36 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4772515527588392352
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4772515527588392355}
-  m_Layer: 0
-  m_Name: Top
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4772515527588392355
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4772515527588392352}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4772515528097153953}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4772515528097153958
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,8 +28,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4772515527588392355}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -73,11 +41,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4772515528097153958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34d4ad2e55d536b4cb386f939a8de25d, type: 3}
+  m_Script: {fileID: 11500000, guid: d5c95e958c7ddd84d9b78ec12c3f825e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TileType: 0
-  levelData: {fileID: 11400000, guid: c631862f26f1d204a8c046b2af6197a2, type: 2}
   _tilePrefabs:
   - {fileID: 4772515528097153953, guid: ffe2552275171bd44991ef9c749ab12d, type: 3}
   - {fileID: 3751835950625698698, guid: 5639d1f102f25b148b3cd7a2da30e577, type: 3}
@@ -87,3 +53,5 @@ MonoBehaviour:
   - {fileID: 4772515528097153953, guid: cc01c65ea6cbcb54ba874b26776758e2, type: 3}
   - {fileID: 4772515528097153953, guid: 2375930b00a8340488ec35e0419fa06c, type: 3}
   - {fileID: 4772515528097153953, guid: 443fee46e67f93b4286c44d0572f458a, type: 3}
+  minMoveTile: 4
+  maxMoveTile: 7

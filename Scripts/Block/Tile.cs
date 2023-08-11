@@ -20,24 +20,54 @@ public class Tile : MonoBehaviour
     private const int minRotation = 4;
     private const int maxRotation = 7;
     private const int rotationMultiplier = 90;
+    
+    // íƒ€ì¼ì˜ ë°°ì—´ ì¸ë±ìŠ¤ ê°’ì„ ì €ìž¥í•  í”„ë¡œí¼í‹°
+    public int Row { get; set; }
+    public int Column { get; set; }
 
-    public void Initialize(int tile)
+    // íƒ€ì¼ì˜ ìœ„ì¹˜ ê°’ì„ ì €ìž¥í•  í”„ë¡œí¼í‹°
+    public Vector3 Pos { get; set; }
+
+    // íƒ€ì¼ì´ ê°€ë¦¬í‚¤ê³  ìžˆëŠ” ì˜¤ë¸Œì íŠ¸ë¥¼ ì €ìž¥í•  ë³€ìˆ˜
+    public GameObject tileObject;
+
+    public void SetPosition() => transform.position = tileObject.transform.position;
+    public void SetIndex(int row, int col)
     {
-        // Å¸ÀÏ µ¥ÀÌÅÍ ±âÀÔµÈ ¼ýÀÚ°¡ ½ÊÀÇ ÀÚ¸®°¡ ³Ñ¾î°¡µµ 4~8À¸·Î °íÁ¤µÇ°Ô
+        Row = row;
+        Column = col;
+    }
+
+    public void Initialize(TileData tileData, int column, int row, Vector3 spawnPos)
+    {
+        int tile = (int)tileData;
+        // íƒ€ì¼ ë°ì´í„° ê¸°ìž…ëœ ìˆ«ìžê°€ ì‹­ì˜ ìžë¦¬ê°€ ë„˜ì–´ê°€ë„ 4~8ìœ¼ë¡œ ê³ ì •ë˜ê²Œ
         TileType = tile % (maxRotation + 1);
-        // »ý¼ºµÈ Å¸ÀÏ ÇÁ¸®ÆÕÀÇ Æ®·£½º Á¤º¸¸¦ °¡Á®¿È
+        // ìƒì„±ëœ íƒ€ì¼ í”„ë¦¬íŒ¹ì˜ íŠ¸ëžœìŠ¤ ì •ë³´ë¥¼ ê°€ì ¸ì˜´
         currentTile = Instantiate(_tilePrefabs[TileType], transform);
-        // »ý¼ºµÈ Å¸ÀÏ¿¡ Æ®·£½º Á¤º¸ÀÇ À§Ä¡¸¦ 0, 0, 0À¸·Î ÇÔ
+        // ìƒì„±ëœ íƒ€ì¼ì— íŠ¸ëžœìŠ¤ ì •ë³´ì˜ ìœ„ì¹˜ë¥¼ 0, 0, 0ìœ¼ë¡œ í•¨
         currentTile.transform.localPosition = Vector3.zero;
-        // Å¸ÀÏ Å¸ÀÔÀÌ ½ÃÀÛ ¶Ç´Â ³¡ ÀÌ¶ó¸é
-        if (TileType == 1 || TileType == 2)
+        
+        // ìŠ¤í¬ë¦½íŠ¸ì— ì¸ë±ìŠ¤ ë° ìœ„ì¹˜ ê°’ ì €ìž¥
+        Row = row;
+        Column = column;
+        Pos = spawnPos;
+        tileObject = currentTile.parent.gameObject;
+
+        // íƒ€ì¼ì´ ë²„íŠ¼ì´ë¼ë©´
+        if (tileData == TileData.Button)
         {
-            // ½ÃÀÛ°ú ³¡ Å¸ÀÏ
+        }
+
+        // íƒ€ì¼ íƒ€ìž…ì´ ì‹œìž‘ ë˜ëŠ” ë ì´ë¼ë©´
+        if (tileData >= TileData.Start && tileData <= TileData.End)
+        {
+            // ì‹œìž‘ê³¼ ë íƒ€ì¼
             // rotation = tile / 10;
         }
         else
         {
-            // ±× ¿Ü Å¸ÀÏ¿¡ ´ëÇÑ È¸Àü °ª ·£´ý Àû¿ë
+            // ê·¸ ì™¸ íƒ€ì¼ì— ëŒ€í•œ íšŒì „ ê°’ ëžœë¤ ì ìš©
             rotation = Random.Range(minRotation, maxRotation + 1);
         }
         currentTile.transform.eulerAngles = new Vector3(0, rotation * rotationMultiplier, 0);
@@ -55,7 +85,7 @@ public class Tile : MonoBehaviour
         // emptySprite = currentTile.GetChild(0).GetComponent<SpriteRenderer>();
         // emptySprite.gameObject.SetActive(!IsFilled);
         // filledSprite = currentTile.GetChild(1).GetComponent<SpriteRenderer>();
-        // filledSprite.gameObject.SetActive(IsFilled);¤§
+        // filledSprite.gameObject.SetActive(IsFilled);ã„·
 
         connectBoxes = new List<Transform>();
         for (int i = 2; i < currentTile.childCount; i++)
