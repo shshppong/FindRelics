@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _level: {fileID: 11400000, guid: c631862f26f1d204a8c046b2af6197a2, type: 2}
-  _tilePrefab: {fileID: 1342712717161002199, guid: 949e2c3286629d746b5bfddfcdb05190, type: 3}
-  spawnSpacing: 0.2
+  _tilePrefab: {fileID: 4772515528097153958, guid: 949e2c3286629d746b5bfddfcdb05190, type: 3}
+  spawnSpacing: 0.25
   defaultSpacing: 1
 --- !u!1 &705507993
 GameObject:

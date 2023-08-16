@@ -8,12 +8,15 @@ public class TileButton : MonoBehaviour
     [Header("Animator Settings")]
     [SerializeField] Animator anim;
 
-    [Header("Level Data")]
-    [SerializeField] LevelData levelData;
+    private Tile _tile;
+    
+    public int Y { get; set; }
+    public int X { get; set; }
 
     void Start()
     {
         anim.GetComponent<Animator>();
+        _tile = GetComponent<Tile>();
     }
 
     // 마우스 가까이 가져다 대었을 때
@@ -30,5 +33,6 @@ public class TileButton : MonoBehaviour
     void OnMouseDown()
     {
         anim.SetTrigger("Clicked");
+        GameManager.Instance.Shift(Y, X);
     }
 }
