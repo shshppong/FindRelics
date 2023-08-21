@@ -167,10 +167,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67ca7906bf237224194611408e29b9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _level: {fileID: 11400000, guid: c631862f26f1d204a8c046b2af6197a2, type: 2}
+  _level: {fileID: 11400000, guid: eccd33eb3677b744e8e9df6dad781eff, type: 2}
   _tilePrefab: {fileID: 4772515528097153958, guid: 949e2c3286629d746b5bfddfcdb05190, type: 3}
   spawnSpacing: 0.25
   defaultSpacing: 1
+  hasGameFinished: 0
+  gameFinishedTimer: 2
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,7 +320,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3.15
+  orthographic size: 4.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -342,7 +344,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.46193978, y: -0.33141357, z: 0.19134171, w: 0.8001032}
-  m_LocalPosition: {x: 5, y: 6, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

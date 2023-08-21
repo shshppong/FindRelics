@@ -32,7 +32,9 @@ public class TileButton : MonoBehaviour
 
     void OnMouseDown()
     {
+        if (GameManager.Instance.hasGameFinished == true)
+            return;
         anim.SetTrigger("Clicked");
-        GameManager.Instance.Shift(Y, X);
+        GameManager.Instance.RunCoroutine(Y, X);
     }
 }
