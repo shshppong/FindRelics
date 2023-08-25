@@ -12,9 +12,9 @@ public class PublicLibrary
         Up_Left = 7
     }
 
-    public enum TileDirection
+    public enum WorldType
     {
-        Forward = 0,
-        Right = 1
+        Grass = 0,
+        City = 1,
     }
 }

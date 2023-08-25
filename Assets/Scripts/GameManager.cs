@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
                 newTile.transform.position = newPos;
                 TileType tempType = _level.Data[y * _level.Column + x];
                 // 부모 타일 속성 초기화 하기 (자식 오브젝트에 타일 하위 생성)
-                newTile.Initialize(tempType, y, x);
+                newTile.Initialize(tempType, _level, y, x);
 
                 // 배열에 타일 데이터 집어넣기
                 _tileData[y, x] = newTile;

@@ -55,7 +55,7 @@ public class Tile : MonoBehaviour
         currentTileList.AddRange(newTile.currentTileList);
     }
 
-    public void Initialize(TileType tileType, int y, int x)
+    public void Initialize(TileType tileType, LevelData level, int y, int x)
     {
         TileType = tileType;
         int tileTypeNum = (int)TileType % (maxMoveTile + 1);
@@ -88,11 +88,17 @@ public class Tile : MonoBehaviour
             currentTile.transform.localPosition = Vector3.zero;
             currentTile = transform.GetChild(0);
 
+            // 버튼 타일이라면
             if (TileType == TileType.Button)
             {
                 btn = transform.GetComponentInChildren<TileButton>();
                 btn.Y = y;
                 btn.X = x;
+
+                if (y == level.Column - 1)
+                {
+                    btn.transform.eulerAngles = new Vector3(0, -1 * rotationMultiplier, 0);
+                }
             }
 
             if (tileType == TileType.Start || tileType == TileType.End)
