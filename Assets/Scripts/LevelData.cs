@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class LevelData : ScriptableObject
 {
     public int Row;
     public int Column;
-    public List<TileType> Data;
+    public List<TileData> Data;
 
     private void OnValidate()
     {

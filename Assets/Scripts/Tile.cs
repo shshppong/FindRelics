@@ -55,9 +55,9 @@ public class Tile : MonoBehaviour
         currentTileList.AddRange(newTile.currentTileList);
     }
 
-    public void Initialize(TileType tileType, LevelData level, int y, int x)
+    public void Initialize(TileData tileData, LevelData level, int y, int x)
     {
-        TileType = tileType;
+        TileType = tileData.tileType;
         int tileTypeNum = (int)TileType % (maxMoveTile + 1);
 
         // 비어있는 타일이라면 생성하지 않기
@@ -66,7 +66,7 @@ public class Tile : MonoBehaviour
 
         if (tileTypeNum >= minMoveTile && tileTypeNum <= maxMoveTile)
         {
-            rotation = Random.Range(minRotation, maxRotation);
+            rotation = tileData.rotation;
             for (int i = minMoveTile; i <= maxMoveTile; i++)
             {
                 currentTile = Instantiate(_tilePrefabs[i], transform);
@@ -101,7 +101,7 @@ public class Tile : MonoBehaviour
                 }
             }
 
-            if (tileType == TileType.Start || tileType == TileType.End)
+            if (TileType == TileType.Start || TileType == TileType.End)
             {
                 Transform child = transform.GetChild(0);
                 currentTileList.Add(child);

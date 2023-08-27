@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     private GameObject tempGameObject;
     private Tile tempTile;
 
-    private List<Tile> startTiles;
+    private Tile startTiles;
 
     [HideInInspector] public bool hasGameFinished;
 
@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
     public void SpawnLevel()
     {
         _tileData = new Tile[_level.Row, _level.Column];
-        startTiles = new List<Tile>();
         float yPos = 0f;
         float xPos = 0f;
 
@@ -60,7 +59,7 @@ public class GameManager : MonoBehaviour
                 Tile newTile = Instantiate(_tilePrefab).GetComponent<Tile>();
                 // 부모 타일 위치 정의하기
                 newTile.transform.position = newPos;
-                TileType tempType = _level.Data[y * _level.Column + x];
+                TileData tempType = _level.Data[y * _level.Column + x];
                 // 부모 타일 속성 초기화 하기 (자식 오브젝트에 타일 하위 생성)
                 newTile.Initialize(tempType, _level, y, x);
 
@@ -68,8 +67,8 @@ public class GameManager : MonoBehaviour
                 _tileData[y, x] = newTile;
 
                 // 시작 타일이라면 startTiles 리스트에 넣기
-                if (tempType == TileType.Start)
-                    startTiles.Add(newTile);
+                if (tempType.tileType == TileType.Start)
+                    startTiles = newTile;
 
                 xPos += defaultSpacing + spawnSpacing;
             }
@@ -160,10 +159,8 @@ public class GameManager : MonoBehaviour
         // 확인할 타일을 큐에 넣기
         Queue<Tile> check = new Queue<Tile>();
         HashSet<Tile> finished = new HashSet<Tile>();
-        foreach (Tile tile in startTiles)
-        {
-            check.Enqueue(tile);
-        }
+
+        check.Enqueue(startTiles);
 
         // 큐에 넣은 타일 하나씩 빼와서 레이캐스트 체크해서 연결 검사하기
         while (check.Count > 0)

@@ -11,10 +11,11 @@ public class PublicLibrary
         Up_Left_Down = 6,
         Up_Left = 7
     }
-
-    public enum WorldType
+    
+    [System.Serializable]
+    public struct TileData
     {
-        Grass = 0,
-        City = 1,
+        public TileType tileType;
+        public int rotation;
     }
 }
