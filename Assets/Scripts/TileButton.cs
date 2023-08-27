@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class TileButton : MonoBehaviour
@@ -32,7 +31,7 @@ public class TileButton : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (GameManager.Instance.hasGameFinished == true)
+        if (GameManager.Instance.isRelocation == false || GameManager.Instance.hasGameFinished == true)
             return;
         anim.SetTrigger("Clicked");
         GameManager.Instance.RunCoroutine(Y, X);

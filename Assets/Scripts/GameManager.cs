@@ -8,7 +8,11 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     
     [Header("Spawn Level Value")]
-    [SerializeField] private LevelData _level;
+    //[SerializeField] private LevelData _level;
+    public int Row = 3;
+    public int Column = 3;
+    [HideInInspector] public int row = 5;
+    [HideInInspector] public int column = 5;
     [SerializeField] private GameObject _tilePrefab;
 
     [Header("Block Spacing")]
@@ -27,12 +31,45 @@ public class GameManager : MonoBehaviour
     [Header("Timer")]
     public float gameFinishedTimer = 2f;
 
-    private float checkDelayTimer = 0.1f;
+    private TileType[,] map;
+
+    public bool isGenerate;
+    public bool isRelocation;
+
+    private List<Transform> trs;
+
+    public int Straight_Tile = 0;
+    public int Up_Left_Down_Right = 0;
+    public int Up_Left_Down = 0;
+    public int Up_Left = 0;
 
     private void Awake()
     {
         Instance = this;
-        SpawnLevel();
+
+        row = Row + 2;
+        column = Column + 2;
+
+        // 기본 위치 정의
+        // 1,0 2,0 3,0      x = 1       x - (row - 1)
+        // 3,1 3,2 3,3      y = 3       y - (col - 1)
+        // StartTile        (0, 1)
+        // EndTile          (3, 4)
+        map = new TileType[row, column];
+        map[0, 1] = TileType.Start;
+        map[row - 2, column - 1] = TileType.End;
+        for (int y = 1; y < row - 1; y++)
+            map[y, 0] = TileType.Button;
+        for (int x = 1; x < column - 1; x++)
+            map[row - 1, x] = TileType.Button;
+        for (int y = 1; y < row - 1; y++)
+            for (int x = 1; x < column - 1; x++)
+                map[y, x] = TileType.Straight;
+
+        isGenerate = false;
+        isRelocation = false;
+
+        GenerateMapAndCheckTile();
     }
 
     private void Start()
@@ -46,30 +83,39 @@ public class GameManager : MonoBehaviour
 
     public void SpawnLevel()
     {
-        _tileData = new Tile[_level.Row, _level.Column];
+        if (trs != null)
+            if (trs.Count > 0)
+                foreach (Transform tr in trs)
+                    Destroy(tr.gameObject);
+
+        _tileData = new Tile[row, column];
         startTiles = new List<Tile>();
+        trs = new List<Transform>();
         float yPos = 0f;
         float xPos = 0f;
 
-        for (int y = 0; y < _level.Row; y++)
+        for (int y = 0; y < row; y++)
         {
-            for (int x = 0; x < _level.Column; x++)
+            for (int x = 0; x < column; x++)
             {
                 // 부모 타일 오브젝트 생성하기
                 Vector3 newPos = new Vector3(yPos, 0, xPos);
                 Tile newTile = Instantiate(_tilePrefab).GetComponent<Tile>();
                 // 부모 타일 위치 정의하기
                 newTile.transform.position = newPos;
-                TileType tempType = _level.Data[y * _level.Column + x];
+
+                //TileType tempType = _level.Data[y * _level.Column + x];
                 // 부모 타일 속성 초기화 하기 (자식 오브젝트에 타일 하위 생성)
-                newTile.Initialize(tempType, _level, y, x);
+                newTile.Initialize((int)map[y, x], y, x);
 
                 // 배열에 타일 데이터 집어넣기
                 _tileData[y, x] = newTile;
 
                 // 시작 타일이라면 startTiles 리스트에 넣기
-                if (tempType == TileType.Start)
+                if (newTile.TileType == TileType.Start)
                     startTiles.Add(newTile);
+
+                trs.Add(newTile.transform);
 
                 xPos += defaultSpacing + spawnSpacing;
             }
@@ -77,13 +123,13 @@ public class GameManager : MonoBehaviour
             xPos = 0;
         }
 
-        Camera.main.orthographicSize = (Mathf.Max(_level.Row, _level.Column) / 2f) + 1f;
+        Camera.main.orthographicSize = (Mathf.Max(row, column) / 2f) + 1f;
         Vector3 cameraPos = Camera.main.transform.position;
-        cameraPos.x = _level.Column;
-        cameraPos.y = _level.Row + 1;
+        cameraPos.x = column;
+        cameraPos.y = row + 1;
         Camera.main.transform.position = cameraPos;
 
-        StartCoroutine(CheckDelay(checkDelayTimer));
+        Check();
     }
 
     private void Shift(int y, int x)
@@ -112,30 +158,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //public void PrintTileNumberArray()
-    //{
-    //    string strs = null;
-    //    for (int y = 0; y < _tileData.GetLength(0); y++)
-    //    {
-    //        for (int x = 0; x < _tileData.GetLength(1); x++)
-    //        {
-    //            strs += $"{(int)_tileData[y, x].TileType}\t";
-    //        }
-    //        strs += "\n";
-    //    }
-    //    Debug.Log(strs);
-    //}
-
     public void RunCoroutine(int y, int x)
     {
         Shift(y, x);
-        StartCoroutine(CheckDelay(checkDelayTimer));
+        Check();
     }
 
-    public IEnumerator CheckDelay(float sec)
+    public void Check()
     {
-        yield return new WaitForSeconds(sec);
-
         // 타일 연결 검사하고 해당 타일에 불리언 값 할당
         CheckTile();
         // 불리언 값 검사로 연결이 정상적으로 되었는지 확인
@@ -145,15 +175,12 @@ public class GameManager : MonoBehaviour
     private void CheckTile()
     {
         // 타일이 연결되었던 흔적 변경
-        for (int i = 1; i < _level.Row - 2; i++)
+        for (int i = 0; i < row; i++)
         {
-            for (int j = 1; j < _level.Column - 2; j++)
+            for (int j = 0; j < column; j++)
             {
                 Tile tempTile = _tileData[i, j];
-                if (tempTile.TileType != TileType.Empty || tempTile.TileType != TileType.Button)
-                {
-                    tempTile.IsClosed = false;
-                }
+                tempTile.IsClosed = false;
             }
         }
 
@@ -161,9 +188,7 @@ public class GameManager : MonoBehaviour
         Queue<Tile> check = new Queue<Tile>();
         HashSet<Tile> finished = new HashSet<Tile>();
         foreach (Tile tile in startTiles)
-        {
             check.Enqueue(tile);
-        }
 
         // 큐에 넣은 타일 하나씩 빼와서 레이캐스트 체크해서 연결 검사하기
         while (check.Count > 0)
@@ -172,12 +197,8 @@ public class GameManager : MonoBehaviour
             finished.Add(tile);
             List<Tile> connected = tile.ConnectedTiles();
             foreach (Tile connectTile in connected)
-            {
                 if (!finished.Contains(connectTile))
-                {
                     check.Enqueue(connectTile);
-                }
-            }
         }
 
         // 검사 완료된 타일은 연결된 것으로 간주
@@ -187,16 +208,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void CheckWin()
+    private bool CheckWin()
     {
         // 끝 지점까지 연결되었는지 체크
-        int y = _level.Row - 1;
-        int x = _level.Column - 1;
-        if (!_tileData[y - 1, x].IsClosed)
-            return;
+        int y = row - 2;
+        int x = column - 1;
 
-        hasGameFinished = true;
-        StartCoroutine(GameFinishedLoadScene(gameFinishedTimer));
+        // 생성이 제대로 되지 않았으면 승리하지 않기
+        if (isGenerate == false)
+        {
+            isGenerate = true;
+            return false;
+        }
+
+        // 생성이 제대로 되었고, 마지막 타일까지 연결되어있다면 승리하기
+        if (isRelocation == true)
+        {
+            if (!_tileData[y, x].IsClosed)
+                return false;
+
+            hasGameFinished = true;
+            StartCoroutine(GameFinishedLoadScene(gameFinishedTimer));
+            return true;
+        }
+
+        return true;
     }
 
     private IEnumerator GameFinishedLoadScene(float sec)
@@ -204,12 +240,60 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(sec);
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
+    
+    private void GenerateMapAndCheckTile()
+    {
+        if (isGenerate == false)
+            SpawnLevel();
 
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        PrintTileNumberArray();
-    //    }
-    //}
+        if (isGenerate == true)
+        {
+            // 타일이 목적지까지 연결이 되어있다면,
+            // 배치된 타일들을 1,1 ~ 3,3 까지 List에 넣고
+            // List에 넣어져있는 요소들을 랜덤으로 섞은 후 큐에 넣는다.
+            // 0,0 부터 큐에 들어간 타일들을 배치시켜야한다.
+            // 배치하고 다시 연결되어있는지 체크해야 한다.
+
+            // 배치된 타일들을 1,1 ~ 3,3 까지 List에 넣고
+            List<Tile> tiles = new List<Tile>();
+            for (int y = 1; y < Row + 1; y++)
+                for (int x = 1; x < Column + 1; x++)
+                    tiles.Add(_tileData[x, y]);
+
+            // List에 넣어져 있는 요소들을 랜덤으로 섞은 후 큐에 넣는다.
+            ShuffleList(tiles);
+
+            Queue<Tile> tileQueue = new Queue<Tile>(tiles);
+            for (int y = 1; y < Row + 1; y++)
+                for (int x = 1; x < Column + 1; x++)
+                    _tileData[y, x].ChangeTile(tileQueue.Dequeue());
+
+            Check();
+
+            isRelocation = true;
+        }
+        else
+        {
+            isGenerate = false;
+            isRelocation = false;
+            GenerateMapAndCheckTile();
+        }
+    }
+
+    // 무작위로 리스트를 섞는 함수
+    public static void ShuffleList<T>(List<T> list)
+    {
+        int n = list.Count;
+        System.Random rng = new System.Random();
+
+        // Fisher-Yates 알고리즘을 사용하여 리스트를 섞음
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+    }
 }

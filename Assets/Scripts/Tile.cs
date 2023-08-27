@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static PublicLibrary;
@@ -55,15 +56,25 @@ public class Tile : MonoBehaviour
         currentTileList.AddRange(newTile.currentTileList);
     }
 
-    public void Initialize(TileType tileType, LevelData level, int y, int x)
+    public void Initialize(int tileType, int y, int x)
     {
-        TileType = tileType;
-        int tileTypeNum = (int)TileType % (maxMoveTile + 1);
+        int tileTypeNum = tileType;
+        if (tileType == (int)TileType.Straight)
+        {
+            tileTypeNum = Random.Range(minMoveTile, maxMoveTile);
+            TileType = (TileType)tileTypeNum;
+        }
+        else
+        {
+            TileType = (TileType)tileType;
+            tileTypeNum = tileType;
+        }
 
         // 비어있는 타일이라면 생성하지 않기
         if (TileType == TileType.Empty)
             return;
 
+        // 타일이 + - ㄱ ㅗ 이면
         if (tileTypeNum >= minMoveTile && tileTypeNum <= maxMoveTile)
         {
             rotation = Random.Range(minRotation, maxRotation);
@@ -71,7 +82,7 @@ public class Tile : MonoBehaviour
             {
                 currentTile = Instantiate(_tilePrefabs[i], transform);
                 currentTile.transform.localPosition = Vector3.zero;
-        
+                
                 currentTile.transform.rotation = Quaternion.Euler(new Vector3(0, rotation * rotationMultiplier, 0));
 
                 currentTileList.Add(currentTile);
@@ -82,7 +93,7 @@ public class Tile : MonoBehaviour
             currentTile = transform.GetChild(tileTypeNum % minMoveTile);
             currentTile.gameObject.SetActive(true);
         }
-        else
+        else // Empty, Start, End, Button 이면
         {
             Transform currentTile = Instantiate(_tilePrefabs[tileTypeNum], transform);
             currentTile.transform.localPosition = Vector3.zero;
@@ -95,13 +106,13 @@ public class Tile : MonoBehaviour
                 btn.Y = y;
                 btn.X = x;
 
-                if (y == level.Column - 1)
+                if (y == GameManager.Instance.column - 1)
                 {
                     btn.transform.eulerAngles = new Vector3(0, -1 * rotationMultiplier, 0);
                 }
             }
 
-            if (tileType == TileType.Start || tileType == TileType.End)
+            if (TileType == TileType.Start || TileType == TileType.End)
             {
                 Transform child = transform.GetChild(0);
                 currentTileList.Add(child);
@@ -180,23 +191,4 @@ public class Tile : MonoBehaviour
 
         return result;
     }
-
-    //private void OnDrawGizmos()
-    //{
-    //    if (transform.childCount <= 0) return;
-    //    if (currentTileList.Count <= 0) return;
-
-    //    foreach (Transform tile in transform)
-    //    {
-    //        if (tile.gameObject.activeSelf == true)
-    //        {
-    //            for (int i = 1; i < tile.childCount; i++)
-    //            {
-    //                //Debug.DrawLine(tile.GetChild(i).position, , Color.red, 0.1f);
-    //                Gizmos.color = Color.green;
-    //                Gizmos.DrawLine(tile.GetChild(i).position, tile.GetChild(i).position + tile.GetChild(i).forward * 0.2f);
-    //            }
-    //        }
-    //    }
-    //}
 }
