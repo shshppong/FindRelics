@@ -168,11 +168,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _level: {fileID: 11400000, guid: eccd33eb3677b744e8e9df6dad781eff, type: 2}
-  _tilePrefab: {fileID: 4772515528097153958, guid: 0d92eb68635b80647a98ca9292d50ab6, type: 3}
   spawnSpacing: 0.25
   defaultSpacing: 1
-  hasGameFinished: 0
-  gameFinishedTimer: 2
+  startTile: {fileID: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

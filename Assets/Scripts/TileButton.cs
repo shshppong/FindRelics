@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public class TileButton : MonoBehaviour
@@ -9,9 +8,6 @@ public class TileButton : MonoBehaviour
     [SerializeField] Animator anim;
 
     private Tile _tile;
-    
-    public int Y { get; set; }
-    public int X { get; set; }
 
     void Start()
     {
@@ -32,9 +28,17 @@ public class TileButton : MonoBehaviour
 
     void OnMouseDown()
     {
-        if (GameManager.Instance.hasGameFinished == true)
-            return;
         anim.SetTrigger("Clicked");
-        GameManager.Instance.RunCoroutine(Y, X);
+        // 버튼을 눌렀을 때 타일을 이동시켜 보자.
+
+        // 타일을 리스트에 넣는다.
+        List<Tile> newTileList = _tile.TilesButtonLine();
+        
+        // 마지막 위치의 타일 위치를 저장합니다.
+        Vector3 tempPos = newTileList[newTileList.Count].transform.position;
+        for (int i = 0; i < newTileList.Count; i++)
+        {
+            // 
+        }
     }
 }

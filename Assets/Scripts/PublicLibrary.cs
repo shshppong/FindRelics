@@ -1,4 +1,4 @@
-public class PublicLibrary
+public static class PublicLibrary
 {
     public enum TileType
     {
@@ -15,7 +15,16 @@ public class PublicLibrary
     [System.Serializable]
     public struct TileData
     {
-        public TileType tileType;
-        public int rotation;
+        public TileType TileType;
+        public UnityEngine.GameObject TilePrefab;
+        public int Rotation;
+    }
+
+    public static T GetOrAddComponent<T> (this UnityEngine.GameObject go) where T : UnityEngine.Component
+    {
+        T component = go.GetComponent<T>();
+        if (component == null)
+            component = go.AddComponent<T>();
+        return component;
     }
 }
