@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 2945909840004076284}
   m_Layer: 8
   m_Name: NatureTile_+ Final
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

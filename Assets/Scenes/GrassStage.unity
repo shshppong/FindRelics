@@ -167,10 +167,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67ca7906bf237224194611408e29b9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _level: {fileID: 11400000, guid: eccd33eb3677b744e8e9df6dad781eff, type: 2}
+  Level: {fileID: 11400000, guid: eccd33eb3677b744e8e9df6dad781eff, type: 2}
   spawnSpacing: 0.25
   defaultSpacing: 1
   startTile: {fileID: 0}
+  CharacterPrefab: {fileID: 4880427722732886883, guid: 41e18ddba69eddd4c9ab02cdcf2ebc87, type: 3}
+  PlayingAnimSpeed: 0.5
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

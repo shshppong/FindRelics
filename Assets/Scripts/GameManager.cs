@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("Spawn Level Value")]
-    [SerializeField] private LevelData _level;
+    public LevelData Level;
 
     [Header("Block Spacing")]
     public float spawnSpacing = 0.25f;
@@ -17,11 +18,14 @@ public class GameManager : MonoBehaviour
     [Header("Start Tile")]
     public Tile startTile;
 
-    // LevelData의 Data를 읽어와서 타일 배치한다.
-    // 그 전에 3x3 이면 x + 2, y + 2 해서 부속 타일부터 배치시킨다.
+    [Header("Character")]
+    public GameObject CharacterPrefab;
+    public Player Player;
 
+    [Header("Animations")]
+    public float PlayingAnimSpeed = 0.3f;
 
-    private void Awake()
+    void Awake()
     {
         Instance = this;
 
@@ -29,10 +33,26 @@ public class GameManager : MonoBehaviour
         CameraSetting();
     }
 
+    // 1 프레임 이후 처리할 코드
+    private bool hasRunOnce = false;
+    void LateUpdate()
+    {
+        if (hasRunOnce)
+            return;
+
+        GameObject[] gos = GameObject.FindGameObjectsWithTag("Button");
+        foreach (GameObject go in gos)
+        {
+            TileButton tileButton = go.GetComponent<TileButton>();
+            tileButton.Initialize();
+        }
+        hasRunOnce = true;
+    }
+
     void SpawnStage()
     {
-        int row = _level.Row;
-        int col = _level.Column;
+        int row = Level.Row;
+        int col = Level.Column;
 
         float yPos = 0f;
         float xPos = 0f;
@@ -44,7 +64,7 @@ public class GameManager : MonoBehaviour
                 // 타일 위치 미리 저장하기
                 Vector3 newPos = new Vector3(yPos, 0, xPos);
                 // 레벨 데이터 안에 타일 프리팹 불러오기
-                TileData tileData = _level.Data[y * col + x];
+                TileData tileData = Level.Data[y * col + x];
 
                 // 불러온 타일 생성
                 Tile newTile = Instantiate(tileData.TilePrefab).GetOrAddComponent<Tile>();
@@ -52,11 +72,17 @@ public class GameManager : MonoBehaviour
                 newTile.transform.position = newPos;
                 TileType type = tileData.TileType;
                 // 타일 초기화하기
-                newTile.Initialize(type, tileData.Rotation, x, y, _level);
+                newTile.Initialize(type, tileData.Rotation, x, y, Level);
 
                 // 시작 타일이면 startTiles 리스트에 넣기
                 if (type == TileType.Start)
+                {
                     startTile = newTile;
+                    // 캐릭터 생성하기
+                    Player = Instantiate(CharacterPrefab).GetComponent<Player>();
+                    Transform temp = newTile.transform.GetChild(1).transform;
+                    Player.Initialize(temp, Level, newTile);
+                }
 
                 xPos += defaultSpacing + spawnSpacing;
             }
@@ -68,10 +94,22 @@ public class GameManager : MonoBehaviour
 
     void CameraSetting()
     {
-        Camera.main.orthographicSize = (Mathf.Max(_level.Row, _level.Column) / 2f) + 1f;
+        Camera.main.orthographicSize = (Mathf.Max(Level.Row, Level.Column) / 2f) + 1f;
         Vector3 cameraPos = Camera.main.transform.position;
-        cameraPos.x = _level.Column;
-        cameraPos.y = _level.Row + 1;
+        cameraPos.x = Level.Column;
+        cameraPos.y = Level.Row + 1;
         Camera.main.transform.position = cameraPos;
+    }
+
+    void BFS()
+    {
+        Vector3[] deltaPos = new Vector3[] { Vector3.up, Vector3.down, Vector3.left, Vector3.right };
+
+        bool[,] found = new bool[Level.Row, Level.Column];
+
+        Queue<Pos> q = new Queue<Pos>();
+        // 첫 위치는 캐릭터가 서 있는 위치로 등록한다.
+        q.Enqueue(new Pos(Player.PosY, Player.PosX));
+
     }
 }
