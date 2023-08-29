@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using UnityEditor.PackageManager;
 
 public class TileButton : MonoBehaviour
 {
@@ -19,8 +18,6 @@ public class TileButton : MonoBehaviour
     public int X { get; private set; }
     public int Y { get; private set; }
 
-    [HideInInspector] public int TweenCount;
-
     // 초기 위치 저장
     [SerializeField] List<Vector3> tempVec;
 
@@ -30,8 +27,6 @@ public class TileButton : MonoBehaviour
         Tile = GetComponent<Tile>();
 
         tempVec = new List<Vector3>();
-
-        TweenCount = 0;
     }
 
     public void Initialize()
@@ -60,7 +55,7 @@ public class TileButton : MonoBehaviour
         anim.SetTrigger("Clicked");
 
         // 만약 애니메이션이 실행되고 있는 중 이라면, 리턴 시킨다.
-        int totalPlayingTweens = TweenCount;
+        int totalPlayingTweens = gameManager.tweenQueue.Count;
         if (totalPlayingTweens > 0)
             return;
 
@@ -96,12 +91,12 @@ public class TileButton : MonoBehaviour
     private void MoveObjectToTarget(Transform obj, Vector3 targetPosition, float duration)
     {
         // 트윈 실행
-        obj.DOMove(targetPosition, duration).OnComplete(() =>
+        Tween move = obj.DOMove(targetPosition, duration).OnComplete(() =>
         {
-            TweenCount--;
+            gameManager.tweenQueue.Dequeue();
         });
 
-        TweenCount++;
+        gameManager.tweenQueue.Enqueue(move);
     }
 
     private void MoveObjectWithCurve(Transform obj, Vector3 targetPos, float curveStrength, float duration)
@@ -112,11 +107,14 @@ public class TileButton : MonoBehaviour
         Vector3 direction = (middlePoint - obj.position).normalized;
         Vector3 controlPoint = middlePoint + direction * curveStrength;
 
-        obj.DOLocalPath(new Vector3[] { obj.localPosition, controlPoint, targetPos }, duration).OnComplete(() =>
+        Tween move = obj.DOLocalPath(new Vector3[] { obj.localPosition, controlPoint, targetPos }, duration).OnComplete(() =>
         {
-            TweenCount--;
+            gameManager.tweenQueue.Dequeue();
+
+            // 가장 오래 실행 될 것 같은 트윈에 길찾기 시작 함수 넣기
+            gameManager.DFSStart();
         });
 
-        TweenCount++;
+        gameManager.tweenQueue.Enqueue(move);
     }
 }

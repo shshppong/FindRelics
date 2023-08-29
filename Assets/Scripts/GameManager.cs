@@ -1,8 +1,9 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static PublicLibrary;
+using System.Linq;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,12 +26,98 @@ public class GameManager : MonoBehaviour
     [Header("Animations")]
     public float PlayingAnimSpeed = 0.3f;
 
+    Queue<Tile> tileQueue = new Queue<Tile>();
+
+    [Header("Tile Spawned List")]
+    List<Tile> spawnedTiles = new List<Tile>();
+
+    // 게임 종료 불리언 변수
+    public bool hasGameEnded;
+
+    // 트윈 실행 큐
+    public Queue<Tween> tweenQueue = new Queue<Tween>();
+    
+    // 우선 now 부터 방문
+    // now에 있는 콜라이더를 이용하여 레이캐스트를 쏘고 아직 미방문 상태라면 방문한다.
+    void DFS(Tile now, ref bool isSearchDone)
+    {
+        // 우선 now 부터 방문하고
+        now.isVisited = true;
+
+        // 목적지에 도달한 경우
+        if (now.isDestination)
+        {
+            isSearchDone = true;
+            tileQueue.Enqueue(now);
+            // 게임 종료 변수 활성화 시키기
+            hasGameEnded = true;
+            // 캐릭터 움직이기
+            Player.MoveStart(tileQueue);
+            return;
+        }
+
+        // 계속 호출 되지 않도록 미리 생성
+        Transform[] trs = now.colls.ToArray();
+        // 레이어에서 타일로 등록된 레이어를 시프트 연산시킨다
+        LayerMask layerNameTile = 1 << LayerMask.NameToLayer("Connect");
+        
+        // 레이캐스트 쏠 콜라이더 갯수를 가져온다.
+        for (int next = 0; next < trs.Length; next++)
+        {
+            // 이미 목적지에 도달한 경우 중단
+            if (isSearchDone)
+                return;
+
+            // 만약 나와 상대방으로 이어지는 통로가 있으면 진행하고,
+            // 없으면 스킵
+            Ray ray = new Ray(trs[next].transform.position, trs[next].forward);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 0.2f, layerNameTile))
+            {
+                Tile checkTile = hit.collider.GetComponentInParent<Tile>();
+                // 만약 타일이 존재하지 않으면 스킵
+                if (checkTile == null)
+                    continue;
+                // 만약 통로가 있는데 이미 지나온 곳이라면 스킵
+                if (checkTile.isVisited)
+                    continue;
+
+                // 만약 통로가 존재하면 큐에 넣고 다음 진행하기
+                tileQueue.Enqueue(checkTile);
+                DFS(checkTile, ref isSearchDone);
+            }
+        }
+    }
+
+    public void DFSStart()
+    {
+        // 모든 타일의 방문 여부를 초기화 한다.
+        DisableVisitedTiles();
+        // 타일 스택을 초기화 시킨다.
+        tileQueue.Clear();
+        // 레퍼런스 불리언으로 DFS의 중단점을 만들었기 때문에 불리언 변수를 선언했다.
+        bool isSearchDone = false;
+        // DFS 알고리즘 실행
+        DFS(Player.Tile, ref isSearchDone);
+    }
+    
+    // 모든 타일의 방문 여부를 초기화하는 함수
+    private void DisableVisitedTiles()
+    {
+        foreach (Tile tile in spawnedTiles)
+        {
+            tile.isVisited = false;
+        }
+    }
+
     void Awake()
     {
         Instance = this;
 
         SpawnStage();
         CameraSetting();
+
+        hasGameEnded = false;
     }
 
     // 1 프레임 이후 처리할 코드
@@ -81,8 +168,11 @@ public class GameManager : MonoBehaviour
                     // 캐릭터 생성하기
                     Player = Instantiate(CharacterPrefab).GetComponent<Player>();
                     Transform temp = newTile.transform.GetChild(1).transform;
-                    Player.Initialize(temp, Level, newTile);
+                    Player.Initialize(temp, newTile);
                 }
+                
+                // 생성된 타일 적재하기
+                spawnedTiles.Add(newTile);
 
                 xPos += defaultSpacing + spawnSpacing;
             }
@@ -99,17 +189,5 @@ public class GameManager : MonoBehaviour
         cameraPos.x = Level.Column;
         cameraPos.y = Level.Row + 1;
         Camera.main.transform.position = cameraPos;
-    }
-
-    void BFS()
-    {
-        Vector3[] deltaPos = new Vector3[] { Vector3.up, Vector3.down, Vector3.left, Vector3.right };
-
-        bool[,] found = new bool[Level.Row, Level.Column];
-
-        Queue<Pos> q = new Queue<Pos>();
-        // 첫 위치는 캐릭터가 서 있는 위치로 등록한다.
-        q.Enqueue(new Pos(Player.PosY, Player.PosX));
-
     }
 }
