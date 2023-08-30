@@ -28,17 +28,22 @@ public class Player : MonoBehaviour
 
         // 첫 번째 위치로 이동하고 이동이 끝나면 다음 위치로 이동하는 콜백 및 재귀함수 설정
         Transform target = q.Dequeue().transform.Find("Floor");
+
         // 타겟 방향으로 캐릭터 바라보기
         Vector3 fwd = target.position - transform.position;
         transform.forward = fwd;
+
+        // 이동 트윈 실행하기
         Tween move = transform.DOMove(target.position, moveDuration)
             .OnComplete(() =>
             {
                 // 다음 위치로 이동
                 GameManager.Instance.tweenQueue.Dequeue();
+                // 재귀 실행
                 MoveStart(q);
             });
 
+        // 실행 중인 트윈 큐에 넣기
         GameManager.Instance.tweenQueue.Enqueue(move);
     }
 }
