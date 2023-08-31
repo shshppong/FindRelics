@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -23,6 +24,10 @@ public class Player : MonoBehaviour
         {
             Debug.Log("All positions reached.");
             GameManager.Instance.tweenQueue.Clear();
+
+            // 스테이지 클리어 프리팹 생성하기
+            Instantiate(GameManager.Instance.UI_Clear_Prefab);
+
             return;
         }
 

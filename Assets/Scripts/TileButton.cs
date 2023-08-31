@@ -15,18 +15,19 @@ public class TileButton : MonoBehaviour
 
     void Awake() => gameManager = GameManager.Instance;
 
-    public int X { get; private set; }
-    public int Y { get; private set; }
-
     // 초기 위치 저장
     [SerializeField] List<Vector3> tempVec;
+
+    GameObject moveSound;
 
     void Start()
     {
         anim.GetComponent<Animator>();
         Tile = GetComponent<Tile>();
-
+        
         tempVec = new List<Vector3>();
+
+        moveSound = Resources.Load<GameObject>("Sound/TileMoveSound");
     }
 
     public void Initialize()
@@ -36,6 +37,19 @@ public class TileButton : MonoBehaviour
         foreach (Transform tile in tileTransforms)
         {
             tempVec.Add(tile.position);
+        }
+    }
+
+    void Update()
+    {
+        if (tempVec.Count == 0)
+        {
+            tempVec.Clear();
+            List<Transform> tileTransforms = TilesButtonLine();
+            foreach (Transform tile in tileTransforms)
+            {
+                tempVec.Add(tile.position);
+            }
         }
     }
 
@@ -54,10 +68,15 @@ public class TileButton : MonoBehaviour
     {
         anim.SetTrigger("Clicked");
 
+        if (gameManager.hasGameEnded)
+            return;
+
         // 만약 애니메이션이 실행되고 있는 중 이라면, 리턴 시킨다.
         int totalPlayingTweens = gameManager.tweenQueue.Count;
         if (totalPlayingTweens > 0)
             return;
+
+        Instantiate(moveSound);
 
         // 타일 스왑 시킨다.
         ObjectSwap(TilesButtonLine());
@@ -112,7 +131,7 @@ public class TileButton : MonoBehaviour
             gameManager.tweenQueue.Dequeue();
 
             // 가장 오래 실행 될 것 같은 트윈에 길찾기 시작 함수 넣기
-            gameManager.DFSStart();
+            gameManager.BFSStart();
         });
 
         gameManager.tweenQueue.Enqueue(move);

@@ -77,6 +77,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7accaf43f9fdfef4fbee8432f4178ced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Tile: {fileID: 0}
+  moveDuration: 1
 --- !u!1001 &6097642900627623471
 PrefabInstance:
   m_ObjectHideFlags: 0
